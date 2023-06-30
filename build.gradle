@@ -19,6 +19,8 @@ repositories {
 }
 
 dependencies {
+  implementation 'co.elastic.clients:elasticsearch-java:8.8.2'
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
   implementation "com.opencsv:opencsv:${openCSVVersion}"
   implementation "org.apache.lucene:lucene-core:${luceneVersion}"
   implementation "org.apache.lucene:lucene-queryparser:${luceneVersion}"
