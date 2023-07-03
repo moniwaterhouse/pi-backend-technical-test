@@ -1,16 +1,12 @@
 package com.pureinsights.exercise.backend.repository;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.GetResponse;
-import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.TotalHits;
-import co.elastic.clients.elasticsearch.core.search.TotalHitsRelation;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.pureinsights.exercise.backend.model.Movie;
-import com.pureinsights.exercise.backend.model.Product;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 
@@ -31,20 +27,24 @@ public class IMDBMoviesRepository {
         // And create the API client
         ElasticsearchClient client = new ElasticsearchClient(transport);
 
+
         SearchResponse<Movie> actionMovies = client.search(s -> s
                         .index("imdb-movies")
                         .query(q -> q
-                                .match(t -> t
+                                .wildcard(t -> t
                                         .field("genre")
-                                        .query("Action")
+                                        .wildcard("*Action*")
                                 )
-                        ),
+                        )
+                        .size(2000),
                 Movie.class
         );
 
         TotalHits totalActionMovies = actionMovies.hits().total();
 
         System.out.println("Number of action movies: " + totalActionMovies.value());
+
+        System.out.println(actionMovies.hits());
 
 
         List<Hit<Movie>> actionMoviesList = actionMovies.hits().hits();
@@ -57,6 +57,8 @@ public class IMDBMoviesRepository {
             System.out.println(count + ". " + movie.name);
             count++;
         }
+
+        
 
         restClient.close();
 
