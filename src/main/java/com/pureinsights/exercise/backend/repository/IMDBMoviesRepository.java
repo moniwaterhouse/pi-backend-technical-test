@@ -1,8 +1,12 @@
 package com.pureinsights.exercise.backend.repository;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.TotalHits;
+import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -58,7 +62,39 @@ public class IMDBMoviesRepository {
             count++;
         }
 
-        
+        Query byName = MatchQuery.of(m -> m
+                .field("rate")
+                .query("No Rate")
+        )._toQuery();
+
+// Search by max price
+        Query byMaxPrice = RangeQuery.of(r -> r
+                .field("rate")
+                .gt(JsonData.of(8.0))
+        )._toQuery();
+
+// Combine name and price queries to search the product index
+        SearchResponse<Movie> response = client.search(s -> s
+                        .index("imdb-movies")
+                        .query(q -> q
+                                .bool(b -> b
+                                        .must(byMaxPrice)
+                                        .mustNot(byName)
+                                )
+                        ).size(2000),
+                Movie.class
+        );
+
+        List<Hit<Movie>> moviesList = response.hits().hits();
+
+        count = 1;
+
+        System.out.println("List of movies with rate greater than 8.0:");
+        for(Hit<Movie> ratedMovie: moviesList){
+            Movie otherMovie = ratedMovie.source();
+            System.out.println(count + ". " + otherMovie.name + " - Rate: " + otherMovie.rate);
+            count++;
+        }
 
         restClient.close();
 
