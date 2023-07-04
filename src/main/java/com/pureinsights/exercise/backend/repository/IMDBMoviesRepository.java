@@ -16,10 +16,37 @@ import org.elasticsearch.client.RestClient;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Scanner;
 
 public class IMDBMoviesRepository {
 
     public static void main(String[] args) throws IOException {
+
+        int searchMaxSize = 10000;
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the movie genre: ");
+        String genre= scanner.nextLine();
+
+        double rate = 0.0;
+        boolean isValidInput = false;
+
+        while (!isValidInput) {
+            System.out.print("Enter rate: ");
+
+            if (scanner.hasNextDouble()) {
+                rate = scanner.nextDouble();
+                isValidInput = true;
+            } else {
+                System.out.println("Invalid input! Please enter a valid double for rate.");
+                scanner.nextLine();  // Clear the input buffer
+            }
+        }
+
+// Remember to close the scanner when you're done with it
+        scanner.close();
+
         // Create the low-level client
         RestClient restClient = RestClient.builder(
                 new HttpHost("localhost", 9200)).build();
@@ -32,45 +59,40 @@ public class IMDBMoviesRepository {
         ElasticsearchClient client = new ElasticsearchClient(transport);
 
 
-        SearchResponse<Movie> actionMovies = client.search(s -> s
+        SearchResponse<Movie> genreMovies = client.search(s -> s
                         .index("imdb-movies")
                         .query(q -> q
                                 .wildcard(t -> t
                                         .field("genre")
-                                        .wildcard("*Action*")
+                                        .wildcard("*"+genre+"*")
                                 )
                         )
-                        .size(2000),
+                        .size(searchMaxSize),
                 Movie.class
         );
 
-        TotalHits totalActionMovies = actionMovies.hits().total();
 
-        System.out.println("Number of action movies: " + totalActionMovies.value());
-
-        System.out.println(actionMovies.hits());
-
-
-        List<Hit<Movie>> actionMoviesList = actionMovies.hits().hits();
+        List<Hit<Movie>> genreMovieList = genreMovies.hits().hits();
 
         int count = 1;
 
         System.out.println("List of action movies:");
-        for(Hit<Movie> actionMovie: actionMoviesList){
-            Movie movie = actionMovie.source();
+        for(Hit<Movie> genreMovie: genreMovieList){
+            Movie movie = genreMovie.source();
             System.out.println(count + ". " + movie.name);
             count++;
         }
 
-        Query byName = MatchQuery.of(m -> m
+        Query byNoRateLabel = MatchQuery.of(m -> m
                 .field("rate")
                 .query("No Rate")
         )._toQuery();
 
 // Search by max price
-        Query byMaxPrice = RangeQuery.of(r -> r
+        double finalRate = rate;
+        Query byRate = RangeQuery.of(r -> r
                 .field("rate")
-                .gt(JsonData.of(8.0))
+                .gt(JsonData.of(finalRate))
         )._toQuery();
 
 // Combine name and price queries to search the product index
@@ -78,21 +100,21 @@ public class IMDBMoviesRepository {
                         .index("imdb-movies")
                         .query(q -> q
                                 .bool(b -> b
-                                        .must(byMaxPrice)
-                                        .mustNot(byName)
+                                        .must(byRate)
+                                        .mustNot(byNoRateLabel)
                                 )
-                        ).size(2000),
+                        ).size(searchMaxSize),
                 Movie.class
         );
 
-        List<Hit<Movie>> moviesList = response.hits().hits();
+        List<Hit<Movie>> reatedMoviesList = response.hits().hits();
 
         count = 1;
 
         System.out.println("List of movies with rate greater than 8.0:");
-        for(Hit<Movie> ratedMovie: moviesList){
-            Movie otherMovie = ratedMovie.source();
-            System.out.println(count + ". " + otherMovie.name + " - Rate: " + otherMovie.rate);
+        for(Hit<Movie> reatedMovieHit: reatedMoviesList){
+            Movie ratedMovie = reatedMovieHit.source();
+            System.out.println(count + ". " + ratedMovie.name + " - Rate: " + ratedMovie.rate);
             count++;
         }
 
