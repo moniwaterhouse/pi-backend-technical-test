@@ -25,10 +25,15 @@ public class MovieController {
   @Autowired
   private MovieService movieService;
 
+  @Operation(summary = "Search movies according to a genre", description = "Executes a search of movies that include a specific genre")
+  @GetMapping(value = "/searchByGenre", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Page<Movie>> searchByGenre(@RequestParam("genre") String query) {
+    return ResponseEntity.ok(movieService.searchByGenre(query));
+  }
 
   @Operation(summary = "Search the movie collection", description = "Executes a search of a movie in the collection")
-  @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Page<Movie>> search(@RequestParam("q") String query, @ParameterObject Pageable pageRequest) {
-    return ResponseEntity.ok(movieService.search(query, pageRequest));
+  @GetMapping(value = "/searchByRate", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Page<Movie>> searchByRate(@RequestParam("floorRate") String query) {
+    return ResponseEntity.ok(movieService.searchByRate(query));
   }
 }
