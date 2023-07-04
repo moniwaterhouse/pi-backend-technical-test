@@ -5,7 +5,6 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.elasticsearch.core.search.TotalHits;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
@@ -76,7 +75,7 @@ public class IMDBMoviesRepository {
 
         int count = 1;
 
-        System.out.println("List of action movies:");
+        System.out.println("List of "+genre+" movies:");
         for(Hit<Movie> genreMovie: genreMovieList){
             Movie movie = genreMovie.source();
             System.out.println(count + ". " + movie.name);
@@ -111,7 +110,7 @@ public class IMDBMoviesRepository {
 
         count = 1;
 
-        System.out.println("List of movies with rate greater than 8.0:");
+        System.out.println("List of movies with rate greater than "+rate+":");
         for(Hit<Movie> reatedMovieHit: reatedMoviesList){
             Movie ratedMovie = reatedMovieHit.source();
             System.out.println(count + ". " + ratedMovie.name + " - Rate: " + ratedMovie.rate);

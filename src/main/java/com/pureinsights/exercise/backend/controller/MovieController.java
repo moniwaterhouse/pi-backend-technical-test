@@ -33,7 +33,7 @@ public class MovieController {
 
   @Operation(summary = "Search the movie collection", description = "Executes a search of a movie in the collection")
   @GetMapping(value = "/searchByRate", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Page<Movie>> searchByRate(@RequestParam("floorRate") String query) {
+  public ResponseEntity<Page<Movie>> searchByRate(@RequestParam("floorRate") double query) {
     return ResponseEntity.ok(movieService.searchByRate(query));
   }
 }

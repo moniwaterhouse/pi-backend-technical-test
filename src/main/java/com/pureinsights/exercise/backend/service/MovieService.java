@@ -11,5 +11,5 @@ public interface MovieService {
 
   Page<Movie> searchByGenre(String query);
 
-  Page<Movie> searchByRate(String query);
+  Page<Movie> searchByRate(double query);
 }
