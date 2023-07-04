@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Repository
 @Slf4j
-public class InMemoryMovieRepository implements MovieRepository, Closeable {
+public class IMDBMoviesRepository implements MovieRepository, Closeable {
 
     private static final int MAX_SEARCH_COUNT = 10000;
 
