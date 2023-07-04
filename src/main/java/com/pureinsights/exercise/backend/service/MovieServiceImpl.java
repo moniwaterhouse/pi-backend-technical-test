@@ -4,12 +4,11 @@ import com.pureinsights.exercise.backend.model.Movie;
 import com.pureinsights.exercise.backend.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
  * Default implementation of {@link MovieService}
- * @author Andres Marenco
+ * @author Mónica Waterhouse
  */
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -19,7 +18,12 @@ public class MovieServiceImpl implements MovieService {
 
 
   @Override
-  public Page<Movie> search(String query, Pageable pageRequest) {
-    return movieRepository.search(query, pageRequest);
+  public Page<Movie> searchByGenre(String genre) {
+    return movieRepository.searchByGenre(genre);
+  }
+
+  @Override
+  public Page<Movie> searchByRate(double rate) {
+    return movieRepository.searchByRate(rate);
   }
 }
