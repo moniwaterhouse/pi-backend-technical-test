@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Default implementation of {@link MovieService}
- * @author Andres Marenco
+ * @author Mónica Waterhouse
  */
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -18,12 +18,12 @@ public class MovieServiceImpl implements MovieService {
 
 
   @Override
-  public Page<Movie> searchByGenre(String query) {
-    return movieRepository.searchByGenre(query);
+  public Page<Movie> searchByGenre(String genre) {
+    return movieRepository.searchByGenre(genre);
   }
 
   @Override
-  public Page<Movie> searchByRate(double query) {
-    return movieRepository.searchByRate(query);
+  public Page<Movie> searchByRate(double rate) {
+    return movieRepository.searchByRate(rate);
   }
 }

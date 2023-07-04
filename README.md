@@ -2,7 +2,7 @@
 
 This project presents a simple REST API with search capabilities using an [Elasticsearch](https://www.elastic.co)
 search engine, in which, an index populated with
-the [IMDB Most Popular Films and Series dataset](https://www.kaggle.com/mazenramadan/imdb-most-popular-films-and-series):
+the [IMDB Most Popular Films and Series dataset](https://www.kaggle.com/mazenramadan/imdb-most-popular-films-and-series) is created using Kibana.
 
 The REST API has two endpoints that perform the following:
 1. Get all titles that match a provided genre. For example: all titles marked as ‘Action’
